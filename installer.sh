@@ -25,6 +25,15 @@ yesNo()
     fi
 }
 
+yesNoReturn()
+{   
+    if [ "$1" = "y" ] || [ "$1" = "N" ]; then
+        echo 1
+    else
+        echo 0
+    fi
+}
+
 go_valid()
 {
     if [ "$IS_GO_INSTALLED" = "N" ]; then
@@ -62,18 +71,27 @@ postgres_install_input
 # start the server
 sudo service postgresql start
 
-#database_valid_input()
-#{
-#    input "Enter your database name:" DATABASE_NAME
-#    input "You entered: \"$DATABASE_NAME\" | Confirm? (y/n)" CONFIRMATION
-#    yesNo $CONFIRMATION database_valid_input $(
-#        echo YOOOOOOO
-#    )
-#    echo HERE
-#    CONFIRMATION=:
-#}
-#
-#database_valid_input
+input "Enter your database name:" DATABASE_NAME
+echo "You entered: \"$DATABASE_NAME\""
+database_confirm_input()
+{
+    input "Confirm? (y/N)" CONFIRMATION
+
+    result=$(yesNoReturn $CONFIRMATION)
+    if [ $result -eq 0 ]; then
+        echo Please enter y or N
+        database_confirm_input
+    elif [ $result -eq 1 ]; then
+        if [ "$CONFIRMATION" = "N" ]; then
+            input "Enter your database name:" DATABASE_NAME
+            echo "You entered: \"$DATABASE_NAME\""
+            database_confirm_input
+        fi
+        CONFIRMATION=:
+    fi
+}
+
+database_confirm_input
 #sudo -u postgres psql -c "CREATE DATABASE $DATABASE_NAME;"
 
 
