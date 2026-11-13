@@ -6,10 +6,15 @@ sudo service postgresql start
 # INPUTS
 DATABASE_NAME=""
 
-echo ""
-echo "Enter your database name:"
-read DATABASE_NAME
-echo ""
+user_input()
+{
+    echo
+    echo $1
+    read $2
+    echo
+}
+
+user_input "Enter your database name:" DATABASE_NAME
 
 sudo -u postgres psql -c "CREATE DATABASE $DATABASE_NAME;"
 
