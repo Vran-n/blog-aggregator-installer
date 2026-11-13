@@ -92,12 +92,32 @@ database_confirm_input()
 }
 
 database_confirm_input
-#sudo -u postgres psql -c "CREATE DATABASE $DATABASE_NAME;"
+sudo -u postgres psql -c "CREATE DATABASE $DATABASE_NAME;"
+
+input "Enter your database password:" DATABASE_PASSWORD
+echo "You entered: \"$DATABASE_PASSWORD\""
+database_password_confirm_input()
+{
+    input "Confirm? (y/N)" CONFIRMATION
+
+    result=$(yesNoReturn $CONFIRMATION)
+    if [ $result -eq 0 ]; then
+        echo Please enter y or N
+        database_password_confirm_input
+    elif [ $result -eq 1 ]; then
+        if [ "$CONFIRMATION" = "N" ]; then
+            input "Enter your database name:" DATABASE_PASSWORD
+            echo "You entered: \"$DATABASE_PASSWORD\""
+            database_password_confirm_input
+        fi
+        CONFIRMATION=:
+    fi
+}
+
+database_password_confirm_input
+sudo -u postgres psql -d $DATABASE_NAME -c "ALTER USER postgres PASSWORD '$DATABASE_PASSWORD';"
 
 
-#sudo -u postgres psql -d $DATABASE_NAME -c "ALTER USER postgres PASSWORD '$DATABASE_PASSWORD';"
 
 
-
-
-#sudo -u postgres psql -c "DROP DATABASE $DATABASE_NAME;"
+sudo -u postgres psql -c "DROP DATABASE $DATABASE_NAME;"
