@@ -48,6 +48,7 @@ go_install_input()
 {   
     input "Is Go (golang) installed? (y/N)" IS_GO_INSTALLED
     yesNo $IS_GO_INSTALLED go_install_input go_valid
+    echo
 }
 
 postgres_valid()
@@ -56,6 +57,7 @@ postgres_valid()
         echo Installing PostgreSQL...
         sudo apt update
         sudo apt install postgresql postgresql-contrib
+        echo
     fi
 }
 
