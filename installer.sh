@@ -1,8 +1,3 @@
-# install postgres and start the server
-sudo apt update
-sudo apt install postgresql postgresql-contrib
-sudo service postgresql start
-
 # INPUTS
 DATABASE_NAME=""
 
@@ -13,6 +8,11 @@ user_input()
     read $2
     echo
 }
+
+# install postgres and start the server
+sudo apt update
+sudo apt install postgresql postgresql-contrib
+sudo service postgresql start
 
 user_input "Enter your database name:" DATABASE_NAME
 
