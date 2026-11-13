@@ -2,41 +2,54 @@
 IS_GO_INSTALLED=:
 IS_POSTGRESQL_INSTALLED=:
 DATABASE_NAME=:
+DATABASE_PASSWORD=:
 
-user_input()
+input()
 {
     echo $1
     read $2
     echo
 }
 
-go_install_input()
-{
-    user_input "Is Go (golang) installed? (y/N)" IS_GO_INSTALLED
-    if [ "$IS_GO_INSTALLED" = "y" ] || [ "$IS_GO_INSTALLED" = "N" ]; then
-        if [ "$IS_GO_INSTALLED" = "N" ]; then
-            echo Installing Go...
-            curl.exe https://webi.ms/golang | powershell
-        fi
+yesNo()
+{   
+    if [ "$1" = "y" ] || [ "$1" = "N" ]; then
+        echo `$2`
     else
         echo Please enter y or N
-        go_install_input
+        echo `$3 $1 $2`
     fi
 }
 
+go_valid_input()
+{
+    if [ "$IS_GO_INSTALLED" = "N" ]; then
+        echo Installing Go...
+        curl.exe https://webi.ms/golang | powershell
+    fi
+}
+
+
+go_install_input()
+{
+    input "Is Go (golang) installed? (y/N)" IS_GO_INSTALLED
+    yesNo $IS_GO_INSTALLED go_valid_input go_install_input
+}
+
+postgres_valid_input()
+{
+    if [ "$IS_POSTGRESQL_INSTALLED" = "N" ]; then
+        echo Installing PostgreSQL...
+        sudo apt update
+        sudo apt install postgresql postgresql-contrib
+    fi
+}
+
+
 postgres_install_input()
 {
-    user_input "Is PostgreSQL installed? (y/N)" IS_POSTGRESQL_INSTALLED
-    if [ "$IS_POSTGRESQL_INSTALLED" = "y" ] || [ "$IS_POSTGRESQL_INSTALLED" = "N" ]; then
-        if [ "$IS_POSTGRESQL_INSTALLED" = "N" ]; then
-            echo Installing PostgreSQL...
-            sudo apt update
-            sudo apt install postgresql postgresql-contrib
-        fi
-    else
-        echo Please enter y or N
-        postgres_install_input
-    fi
+    input "Is PostgreSQL installed? (y/N)" IS_POSTGRESQL_INSTALLED
+    yesNo $IS_POSTGRESQL_INSTALLED postgres_valid_input postgres_install_input
 }
 
 go_install_input
@@ -45,9 +58,9 @@ postgres_install_input
 # start the server
 sudo service postgresql start
 
-user_input "Enter your database name:" DATABASE_NAME
+input "Enter your database name:" DATABASE_NAME
 sudo -u postgres psql -c "CREATE DATABASE $DATABASE_NAME;"
-
+sudo -u postgres psql -d $DATABASE_NAME -c "ALTER USER postgres PASSWORD '$DATABASE_PASSWORD';"
 
 
 
