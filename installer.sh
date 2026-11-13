@@ -24,17 +24,28 @@ go_install_input()
     fi
 }
 
+postgres_install_input()
+{
+    user_input "Is PostgreSQL installed? (y/N)" IS_POSTGRESQL_INSTALLED
+    if [ "$IS_POSTGRESQL_INSTALLED" = "y" ] || [ "$IS_POSTGRESQL_INSTALLED" = "N" ]; then
+        if [ "$IS_POSTGRESQL_INSTALLED" = "N" ]; then
+            echo Installing PostgreSQL...
+            sudo apt update
+            sudo apt install postgresql postgresql-contrib
+        fi
+    else
+        echo Please enter y or N
+        postgres_install_input
+    fi
+}
+
 go_install_input
+postgres_install_input
 
-user_input "Is Postgresql installed? (y/N)" IS_POSTGRESQL_INSTALLED
-
-# install postgres and start the server
-sudo apt update
-sudo apt install postgresql postgresql-contrib
+# start the server
 sudo service postgresql start
 
 user_input "Enter your database name:" DATABASE_NAME
-
 sudo -u postgres psql -c "CREATE DATABASE $DATABASE_NAME;"
 
 
