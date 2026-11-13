@@ -25,27 +25,33 @@ yesNo()
     fi
 }
 
+go_valid()
+{
+    if [ "$IS_GO_INSTALLED" = "N" ]; then
+        echo Installing Go...
+        curl.exe https://webi.ms/golang | powershell
+    fi 
+}
+
 go_install_input()
 {   
     input "Is Go (golang) installed? (y/N)" IS_GO_INSTALLED
-    yesNo $IS_GO_INSTALLED go_install_input $(
-        if [ "$IS_GO_INSTALLED" = "N" ]; then
-            echo Installing Go...
-            curl.exe https://webi.ms/golang | powershell
-        fi 
-    )
+    yesNo $IS_GO_INSTALLED go_install_input go_valid
+}
+
+postgres_valid()
+{
+    if [ "$IS_POSTGRESQL_INSTALLED" = "N" ]; then
+        echo Installing PostgreSQL...
+        sudo apt update
+        sudo apt install postgresql postgresql-contrib
+    fi
 }
 
 postgres_install_input()
 {
     input "Is PostgreSQL installed? (y/N)" IS_POSTGRESQL_INSTALLED
-    yesNo $IS_POSTGRESQL_INSTALLED postgres_install_input $(
-        if [ "$IS_POSTGRESQL_INSTALLED" = "N" ]; then
-            echo Installing PostgreSQL...
-            sudo apt update
-            sudo apt install postgresql postgresql-contrib
-        fi
-    )
+    yesNo $IS_POSTGRESQL_INSTALLED postgres_install_input postgres_valid
 }
 
 
@@ -59,8 +65,10 @@ sudo service postgresql start
 #database_valid_input()
 #{
 #    input "Enter your database name:" DATABASE_NAME
-#    input "You entered: $DATABASE_NAME Confirm? (y/n)" CONFIRMATION
-#    yesNo $CONFIRMATION database_valid_input database_valid_input
+#    input "You entered: \"$DATABASE_NAME\" | Confirm? (y/n)" CONFIRMATION
+#    yesNo $CONFIRMATION database_valid_input $(
+#        echo YOOOOOOO
+#    )
 #    echo HERE
 #    CONFIRMATION=:
 #}
