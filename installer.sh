@@ -141,12 +141,21 @@ sudo -u postgres psql -c "CREATE DATABASE $DATABASE_NAME;"
 
 
 before_exit()
-{     
+{   
+    local database_url="postgres://postgres:${DATABASE_PASSWORD}@localhost:5432/${DATABASE_NAME}"
+    local database_config_name=".RSS_${DATABASE_NAME}_${DATABASE_PASSWORD}_config.json"
+    
     echo Getting the "https://github.com/Vran-n/blog-aggregator" repository...
     git clone https://github.com/Vran-n/blog-aggregator
     echo
 
-
+    echo Replacing the config path in the repository...
+    sed -i "s/.gatorconfig.json/${database_config_name}/g" blog-aggregator/internal/config/config.go
+    echo
+    
+    echo Creating a new config path in the HOME directory...
+    echo '{"db_url":"'"$database_url"'?sslmode=disable","current_user_name":""}' > ~/${database_config_name}
+    echo
 
     count=$(count_args $(find ./blog-aggregator/sql/schema -name "*.sql"))
     find ./blog-aggregator/sql/schema -name "*.sql" > "$output_find_sql"
@@ -238,10 +247,10 @@ before_exit()
 
 
 
-    local database_url="postgres://postgres:${DATABASE_PASSWORD}@localhost:5432/${DATABASE_NAME}"
     echo "=============Configuration Finished=============="
     echo Your password is: "$DATABASE_PASSWORD"
     echo "Generated URL: $database_url"
+    echo "Config path:" "~/${database_config_name}"
     echo
     echo "To gain access to the database, simply enter:"
     echo "psql '$database_url'"
