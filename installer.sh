@@ -17,6 +17,11 @@ input()
     echo
 }
 
+count_args()
+{
+    echo $#
+}
+
 yesNo()
 {   
     if [ "$1" = "y" ] || [ "$1" = "N" ]; then
@@ -61,14 +66,14 @@ postgres_valid()
     fi
 }
 
-database_prompt_password_default()
+postgres_install_input()
 {
     input "Is PostgreSQL installed? (y/N)" IS_POSTGRESQL_INSTALLED
-    yesNo $IS_POSTGRESQL_INSTALLED database_prompt_password_default postgres_valid
+    yesNo $IS_POSTGRESQL_INSTALLED postgres_install_input postgres_valid
 }
 
 go_install_input
-database_prompt_password_default
+postgres_install_input
 # start the server
 sudo service postgresql start
 
@@ -100,7 +105,23 @@ sudo -u postgres psql -c "CREATE DATABASE $DATABASE_NAME;"
 
 
 before_exit()
-{      
+{     
+    #upmig='CREATE TABLE users (
+    #    id UUID PRIMARY KEY,
+    #    created_at TIMESTAMP NOT NULL,
+    #    updated_at TIMESTAMP NOT NULL,
+    #    name TEXT UNIQUE NOT NULL
+    #);'
+    #
+    #sudo -u postgres psql -d $DATABASE_NAME -c "$upmig"
+#
+    #downmig="DROP TABLE users;"
+#
+    #sudo -u postgres psql -d $DATABASE_NAME -c "$downmig"
+
+    git clone https://github.com/Vran-n/blog-aggregator
+
+
     local database_url="postgres://postgres:${DATABASE_PASSWORD}@localhost:5432/${DATABASE_NAME}"
     echo
     echo "=============Configuration Finished=============="
@@ -109,8 +130,12 @@ before_exit()
     echo
     echo "To gain access to the database, simply enter:"
     echo "psql '$database_url'"
-    sudo -u postgres psql -c "DROP DATABASE $DATABASE_NAME;"
+    #sudo -u postgres psql -c "DROP DATABASE $DATABASE_NAME;"
 }
+
+
+
+
 
 database_prompt_password_valid()
 {
@@ -153,8 +178,4 @@ database_password_confirm_input()
 
 database_password_confirm_input
 sudo -u postgres psql -d $DATABASE_NAME -c "ALTER USER postgres PASSWORD '$DATABASE_PASSWORD';"
-
-
-
-
 before_exit
