@@ -151,7 +151,6 @@ before_exit()
 
     echo Replacing the config path in the repository...
     sed -i "s/.gatorconfig.json/${database_config_name}/g" blog-aggregator/internal/config/config.go
-    echo
     
     echo Creating a new config path in the HOME directory...
     echo '{"db_url":"'"$database_url"'?sslmode=disable","current_user_name":""}' > ~/${database_config_name}
@@ -250,25 +249,36 @@ before_exit()
     echo "
     ./reset_migration.sh
     sudo -u postgres psql -c "'"'"DROP DATABASE $DATABASE_NAME;"'"'"
-    rm reset_migration.sh
-    rm full_migration.sh
-    rm ""~/${database_config_name}""
+    rm -f reset_migration.sh
+    rm -f full_migration.sh
+    rm -f gator
+    rm -f ""~/${database_config_name}""
     rm -rf blog-aggregator
-    echo Uninstallation Complete!
+    echo UNINSTALLATION COMPLETE!
     rm -- "'$0'"
     " > uninstaller.sh
     sudo chmod 744 uninstaller.sh
 
 
 
+    echo Building the program...
+    echo
+    cd blog-aggregator
+    go build .
+    mv blogaggre ../gator
 
-    echo "=============Configuration Finished=============="
+    
+
+    echo "==================INSTALLATION FINISHED=================="
     echo Your password is: "$DATABASE_PASSWORD"
     echo "Generated URL: $database_url"
     echo "Config path:" "~/${database_config_name}"
     echo
     echo "To gain access to the database, simply enter:"
     echo "psql '$database_url'"
+    echo
+    echo "To run the program do:"
+    echo './gator'
 }
 
 
