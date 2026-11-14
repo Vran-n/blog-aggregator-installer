@@ -157,6 +157,8 @@ before_exit()
     echo '{"db_url":"'"$database_url"'?sslmode=disable","current_user_name":""}' > ~/${database_config_name}
     echo
 
+
+
     count=$(count_args $(find ./blog-aggregator/sql/schema -name "*.sql"))
     find ./blog-aggregator/sql/schema -name "*.sql" > "$output_find_sql"
 
@@ -245,6 +247,19 @@ before_exit()
     sudo chmod 744 reset_migration.sh
 
 
+    echo "
+    ./reset_migration.sh
+    sudo -u postgres psql -c "'"'"DROP DATABASE $DATABASE_NAME;"'"'"
+    rm reset_migration.sh
+    rm full_migration.sh
+    rm ""~/${database_config_name}""
+    rm -rf blog-aggregator
+    echo Uninstallation Complete!
+    rm -- "'$0'"
+    " > uninstaller.sh
+    sudo chmod 744 uninstaller.sh
+
+
 
 
     echo "=============Configuration Finished=============="
@@ -254,7 +269,6 @@ before_exit()
     echo
     echo "To gain access to the database, simply enter:"
     echo "psql '$database_url'"
-    sudo -u postgres psql -c "DROP DATABASE $DATABASE_NAME;"
 }
 
 
