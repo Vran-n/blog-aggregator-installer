@@ -63,6 +63,8 @@ git_install_input()
     yesNo $IS_GIT_INSTALLED git_install_input git_valid
 }
 
+
+
 go_valid()
 {
     if [ "$IS_GO_INSTALLED" = "N" ]; then
@@ -77,6 +79,8 @@ go_install_input()
     input "Is Go (golang) installed? (y/N)" IS_GO_INSTALLED
     yesNo $IS_GO_INSTALLED go_install_input go_valid
 }
+
+
 
 postgres_valid()
 {
@@ -155,6 +159,86 @@ before_exit()
     echo "psql '$database_url'"
     #sudo -u postgres psql -c "DROP DATABASE $DATABASE_NAME;"
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
