@@ -151,7 +151,12 @@ before_exit()
 
     echo Replacing the config path in the repository...
     sed -i "s/.gatorconfig.json/${database_config_name}/g" blog-aggregator/internal/config/config.go
-    
+
+    # replace "program name"
+    local name='const PROGRAM_NAME = "blogaggre"'
+    local name2='const PROGRAM_NAME = ".\/gator"'
+    sed -i "s/${name}/${name2}/g" blog-aggregator/main.go
+
     echo Creating a new config path in the HOME directory...
     echo '{"db_url":"'"$database_url"'?sslmode=disable","current_user_name":""}' > ~/${database_config_name}
     echo
