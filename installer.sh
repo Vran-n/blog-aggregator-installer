@@ -1,4 +1,6 @@
 #!/bin/bash
+# THIS PROGRAM ASSUMES THAT THE SQL FILES DON'T VIOLATE POSTGRES'S SYNTAX
+# which it is because i made them :)
 
 # INPUTS
 CONFIRMATION=:
@@ -191,6 +193,7 @@ before_exit()
     rm "$output_sql_up"
     rm "$output_sql_down"
 
+    # these just build the string
     i=1; full_up_str=""
     while [ $i -le $count ]; do
         full_up_str="${full_up_str}up_migrations[$i]='$(echo ${up_migrations[$i]})'; "
