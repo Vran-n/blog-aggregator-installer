@@ -2,6 +2,7 @@
 
 # INPUTS
 CONFIRMATION=:
+IS_GIT_INSTALLED=:
 IS_GO_INSTALLED=:
 IS_POSTGRESQL_INSTALLED=:
 IS_DEFAULT_PASSWORD=:
@@ -41,11 +42,33 @@ yesNoReturn()
     fi
 }
 
+
+
+git_valid()
+{
+    if [ "$IS_GO_INSTALLED" = "N" ]; then
+        echo Installing Git...
+        sudo apt update
+        sudo apt install software-properties-common
+        sudo add-apt-repository ppa:git-core/ppa
+        sudo apt update
+        sudo apt install git
+        echo
+    fi 
+}
+
+git_install_input()
+{   
+    input "Is Git installed? (y/N)" IS_GIT_INSTALLED
+    yesNo $IS_GIT_INSTALLED git_install_input git_valid
+}
+
 go_valid()
 {
     if [ "$IS_GO_INSTALLED" = "N" ]; then
         echo Installing Go...
         curl.exe https://webi.ms/golang | powershell
+        echo
     fi 
 }
 
@@ -53,7 +76,6 @@ go_install_input()
 {   
     input "Is Go (golang) installed? (y/N)" IS_GO_INSTALLED
     yesNo $IS_GO_INSTALLED go_install_input go_valid
-    echo
 }
 
 postgres_valid()
@@ -72,6 +94,7 @@ postgres_install_input()
     yesNo $IS_POSTGRESQL_INSTALLED postgres_install_input postgres_valid
 }
 
+git_install_input
 go_install_input
 postgres_install_input
 # start the server
@@ -119,7 +142,7 @@ before_exit()
 #
     #sudo -u postgres psql -d $DATABASE_NAME -c "$downmig"
 
-    git clone https://github.com/Vran-n/blog-aggregator
+    #git clone https://github.com/Vran-n/blog-aggregator
 
 
     local database_url="postgres://postgres:${DATABASE_PASSWORD}@localhost:5432/${DATABASE_NAME}"
